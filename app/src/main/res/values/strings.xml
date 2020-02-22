@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Cadastro de Pessoas</string>
+    <string name="hintNome">Nome</string>
+    <string name="hintIdade">Idade</string>
+    <string name="configuration">Configurações</string>
+    <string name="add">Adicionar</string>
+</resources>
