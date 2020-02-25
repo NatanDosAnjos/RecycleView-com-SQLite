@@ -16,9 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.CadastroDePessoas">
-
-        </activity>
+        <activity
+            android:name=".activity.CadastroDePessoas"
+            android:windowSoftInputMode="stateVisible" />
     </application>
 
 </manifest>

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,15 +16,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 
 import com.example.cadastrodepessoas.R;
+import com.example.cadastrodepessoas.RecyclerItemClickListener;
 import com.example.cadastrodepessoas.adapter.AdaptadorListaPessoa;
+import com.example.cadastrodepessoas.helper.DbHelper;
 import com.example.cadastrodepessoas.model.Person;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +35,7 @@ import static android.app.PendingIntent.getActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    DbHelper dataBase = new DbHelper(getApplicationContext());
     SQLiteDatabase myDataBase;
     ConstraintLayout consLayout;
     RecyclerView recyclerView;
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         createDatabase("usarios.db");
 
+        recyclerViewListener();
     }
 
     @Override
@@ -57,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         people = recoverDataDataBase();
-        createRecycleView();
+        createRecyclerView();
     }
 
     @Override
@@ -103,7 +109,33 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void createRecycleView() {
+    public void recyclerViewListener() {
+        recyclerView.addOnItemTouchListener( new RecyclerItemClickListener(getApplicationContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+                Snackbar.make(recyclerView, people.get(position).getName(), BaseTransientBottomBar.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onLongItemClick(View view, int position) {
+                if(deleteDataDataBase(myDataBase, people.get(position).getName())) {
+                    Snackbar.make(recyclerView, people.get(position).getName() + " excluído", BaseTransientBottomBar.LENGTH_LONG).show();
+                    people.remove(position);
+                    createRecyclerView();
+                } else {
+                    Snackbar.make(recyclerView, "Erro ao excluir " + people.get(position).getName(), BaseTransientBottomBar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+            }
+        }));
+    }
+
+    public void createRecyclerView() {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         AdaptadorListaPessoa adapter = new AdaptadorListaPessoa(people);
 
@@ -111,11 +143,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-
     }
 
-
     public void insertDataDb(String name, int age) {
+
         String valuesInsert = "'" + name + "', " + age;
         myDataBase.execSQL( "INSERT INTO tabelaPessoas(nome, idade) VALUES("+valuesInsert+") ");
 
@@ -133,6 +164,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public boolean deleteDataDataBase(SQLiteDatabase db, String nameOnDataBase) {
+        String comando = "DELETE FROM tabelaPessoas WHERE nome = '" +  nameOnDataBase + "'";
+        System.out.println("Este é o comando: " + comando);
+        try {
+            db.execSQL(comando);
+        } catch (Exception e) {
+            Log.i("SQL - ", "Erro ao apagar registro");
+            return false;
+        }
+        return true;
+    }
+
     public List<Person> recoverDataDataBase() {
         Cursor cursor;
         int indiceNome;
@@ -140,9 +183,10 @@ public class MainActivity extends AppCompatActivity {
         int indiceId;
         Person personTmp;
         List<Person> peopleTmp = new ArrayList<>();
+        cursor = myDataBase.rawQuery("SELECT id, nome, idade FROM tabelaPessoas", null);
 
         try {
-            cursor = myDataBase.rawQuery("SELECT id, nome, idade FROM tabelaPessoas", null);
+
             indiceNome = cursor.getColumnIndex("nome");
             indiceIdade = cursor.getColumnIndex("idade");
             indiceId = cursor.getColumnIndex("id");
@@ -157,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
 
                 cursor.moveToNext();
             }
+            cursor.close();
             
         } catch (Exception e) {
             e.printStackTrace();

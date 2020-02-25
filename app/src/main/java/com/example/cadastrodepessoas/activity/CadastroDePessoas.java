@@ -32,6 +32,8 @@ public class CadastroDePessoas extends AppCompatActivity {
         layout = findViewById(R.id.layout);
         inputAge = findViewById(R.id.inputIdade);
         inputNome = findViewById(R.id.inputNome);
+
+        inputNome.requestFocus();
     }
 
     @Override
