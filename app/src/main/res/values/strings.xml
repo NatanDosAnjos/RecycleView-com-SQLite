@@ -5,4 +5,17 @@
     <string name="configuration">Configurações</string>
     <string name="add">Adicionar</string>
     <string name="clearAll">Apagar Tudo</string>
+    <string name="sync">Sync</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="sync_header">Sync</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sincronização Automática</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Sincronização da lista com a núvem está automática
+    </string>
+    <string name="attachment_summary_off">Você deverá sincronizar manualmente os dados</string>
+    <string name="syncConfigItem">Sincronizar automáticamente</string>
 </resources>

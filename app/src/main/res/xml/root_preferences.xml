@@ -1,0 +1,16 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/sync_header">
+
+        <SwitchPreferenceCompat
+            android:id="@+id/syncSwitch"
+            android:icon="@drawable/ic_sync_24dp"
+            app:key="sync"
+            app:summaryOff="@string/attachment_summary_off"
+            app:summaryOn="@string/attachment_summary_on"
+            app:title="@string/sync_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

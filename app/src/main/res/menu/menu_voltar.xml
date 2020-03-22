@@ -15,4 +15,8 @@
         android:id="@+id/itemClearAll"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="@string/clearAll" />
+    <item
+        android:id="@+id/itemSync"
+        android:icon="@android:drawable/stat_notify_sync"
+        android:title="@string/sync" />
 </menu>

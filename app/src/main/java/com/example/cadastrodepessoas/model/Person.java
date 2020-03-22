@@ -5,7 +5,6 @@ import java.io.Serializable;
 public class Person implements Serializable {
     private String name;
     private int age;
-    private int id;
 
     public Person(String name, int age) {
         this.name = name;
@@ -13,14 +12,6 @@ public class Person implements Serializable {
     }
 
     public Person() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

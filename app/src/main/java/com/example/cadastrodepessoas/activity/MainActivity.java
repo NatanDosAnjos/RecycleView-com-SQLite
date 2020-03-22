@@ -27,6 +27,8 @@ import com.example.cadastrodepessoas.helper.PersonDAO;
 import com.example.cadastrodepessoas.model.Person;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("people");
     ConstraintLayout consLayout;
     RecyclerView recyclerView;
     List<Person> people = new ArrayList<>();
@@ -103,7 +106,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.itemConfiguracoes:
-                Snackbar.make(consLayout, "Configurado", BaseTransientBottomBar.LENGTH_SHORT).show();
+                intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);
                 break;
 
             case R.id.itemClearAll:
@@ -115,6 +119,10 @@ public class MainActivity extends AppCompatActivity {
                     snackbarMessage("Lista já se encontra vazia", "OK");
 
                 }
+                break;
+
+            case R.id.itemSync:
+                saveOnFirebase();
                 break;
 
             default:
@@ -212,6 +220,15 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
     }
 
+    public void saveOnFirebase() {
+        DatabaseReference users;
+
+        for(int i = 0; i < people.size(); i++) {
+            users = databaseReference.child(people.get(i).getName());
+            users.setValue(people.get(i));
+        }
+    }
+
     public boolean insertDataDb(Person person) {
         try {
             personDAO.save(person);
@@ -233,17 +250,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
 
         }
-
-        /*try {
-            //criando o banco de dados
-            myDataBase = openOrCreateDatabase(nomeDb,MODE_ENABLE_WRITE_AHEAD_LOGGING, null);
-
-            //criando uma tabela
-            myDataBase.execSQL("CREATE TABLE IF NOT EXISTS tabelaPessoas ( id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR(20), idade INT(3) )");
-
-        } catch(Exception e) {
-            e.printStackTrace();
-        }*/
     }
 
     public void deleteDataDataBase(Person person) {

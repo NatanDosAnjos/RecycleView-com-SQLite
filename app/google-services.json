@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "979413238125",
+    "firebase_url": "https://fir-app-e221c.firebaseio.com",
+    "project_id": "fir-app-e221c",
+    "storage_bucket": "fir-app-e221c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:979413238125:android:8984d0750100d5f6d99a64",
+        "android_client_info": {
+          "package_name": "com.example.cadastrodepessoas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "979413238125-cmbgpda2joogmsp3fq0kdpdbn15f37dn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cadastrodepessoas",
+            "certificate_hash": "4d34c67dcccd7c9d5b6669bf9b4a816775fedf13"
+          }
+        },
+        {
+          "client_id": "979413238125-pre43tpjbvhup34ed4brp957if43dr5j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVM2U4M80U5bqkneY4x4oGAE2KME1t7eA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "979413238125-pre43tpjbvhup34ed4brp957if43dr5j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

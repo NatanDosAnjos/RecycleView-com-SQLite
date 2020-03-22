@@ -42,7 +42,20 @@ public class PersonDAO implements IPersonDAO {
 
     @Override
     public boolean update(Person person) {
-        return false;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("nome", person.getName());
+
+        try {
+            String[] args = {person.getName()};
+            write.update(DbHelper.TABLE_PESSOAS,contentValues,"nome=?",args);
+        }
+
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     @Override
