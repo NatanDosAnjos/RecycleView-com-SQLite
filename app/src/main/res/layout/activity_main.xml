@@ -26,15 +26,6 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/id"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="ID"
-                tools:text="ID" />
-
-            <TextView
                 android:id="@+id/name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

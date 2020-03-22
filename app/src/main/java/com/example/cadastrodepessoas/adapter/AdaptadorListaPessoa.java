@@ -11,12 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cadastrodepessoas.R;
 import com.example.cadastrodepessoas.model.Person;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdaptadorListaPessoa extends RecyclerView.Adapter<AdaptadorListaPessoa.ViewHolderPessoa> {
 
-    List<Person> peopleList = new ArrayList<>();
+    private List<Person> peopleList;
 
     public AdaptadorListaPessoa(List<Person> peopleList) {
         this.peopleList = peopleList;
@@ -37,7 +36,6 @@ public class AdaptadorListaPessoa extends RecyclerView.Adapter<AdaptadorListaPes
         Person person;
         person = peopleList.get(position);
 
-        holder.id.setText(String.valueOf(person.getId()));
         holder.nome.setText(person.getName());
         if (person.getAge() != 0) {
             holder.idade.setText(String.valueOf(person.getAge()));
@@ -53,13 +51,11 @@ public class AdaptadorListaPessoa extends RecyclerView.Adapter<AdaptadorListaPes
 
     //ViewHolder
     public class ViewHolderPessoa extends RecyclerView.ViewHolder {
-        TextView id;
         TextView nome;
         TextView idade;
 
-        public ViewHolderPessoa(@NonNull View itemView) {
+        ViewHolderPessoa(@NonNull View itemView) {
             super(itemView);
-            this.id     = itemView.findViewById(R.id.id);
             this.nome   = itemView.findViewById(R.id.name);
             this.idade  = itemView.findViewById(R.id.age);
         }

@@ -9,9 +9,9 @@ import androidx.annotation.Nullable;
 
 public class DbHelper extends SQLiteOpenHelper {
 
-    public static String NAME_DB = "DB_PESSOAS";
-    public static String TABLE_PESSOAS = "pessoas";
-    public static int VERSION = 1;
+        private static String NAME_DB = "DB_PESSOAS";
+        public static String TABLE_PESSOAS = "pessoas";
+        private static int VERSION = 1;
 
     public DbHelper(@Nullable Context context) {
         super(context, NAME_DB, null, VERSION);
@@ -21,7 +21,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         String sql = "CREATE TABLE IF NOT EXISTS " + TABLE_PESSOAS
-                + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);";
+                + " (nome TEXT NOT NULL, idade INTEGER (3));";
 
         try {
             db.execSQL(sql);
@@ -33,5 +33,16 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+    }
+
+    public void resetTable(SQLiteDatabase db, String tableName) {
+        dropTable(db, tableName);
+        onCreate(db);
+    }
+
+    public void dropTable(SQLiteDatabase db, String tableName) {
+        String sqlCommand = "DROP TABLE IF EXISTS " + TABLE_PESSOAS + " ;";
+
+        db.execSQL(sqlCommand);
     }
 }

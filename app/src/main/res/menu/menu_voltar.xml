@@ -11,4 +11,8 @@
         android:id="@+id/itemConfiguracoes"
         android:title="@string/configuration"
         app:showAsAction="withText" />
+    <item
+        android:id="@+id/itemClearAll"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/clearAll" />
 </menu>

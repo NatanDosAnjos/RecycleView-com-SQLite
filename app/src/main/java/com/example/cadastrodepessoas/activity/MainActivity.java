@@ -1,5 +1,16 @@
 package com.example.cadastrodepessoas.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,38 +19,26 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-
 import com.example.cadastrodepessoas.R;
 import com.example.cadastrodepessoas.RecyclerItemClickListener;
 import com.example.cadastrodepessoas.adapter.AdaptadorListaPessoa;
 import com.example.cadastrodepessoas.helper.DbHelper;
+import com.example.cadastrodepessoas.helper.PersonDAO;
 import com.example.cadastrodepessoas.model.Person;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import static android.app.PendingIntent.getActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    DbHelper dataBase = new DbHelper(getApplicationContext());
-    SQLiteDatabase myDataBase;
     ConstraintLayout consLayout;
     RecyclerView recyclerView;
     List<Person> people = new ArrayList<>();
+    PersonDAO personDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,30 +48,35 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         consLayout = findViewById(R.id.consLayout);
 
-        createDatabase("usarios.db");
+        //Criando Banco de Dados
+        createDatabase();
 
+        //Listeners
         recyclerViewListener();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    public void updateRecylcerView() {
+        recoverDataDataBase();
+        createRecyclerView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        people = recoverDataDataBase();
-        createRecyclerView();
+        updateRecylcerView();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
         if (requestCode == 1 && resultCode == RESULT_OK) {
 
-            Person personTmp = (Person) data.getSerializableExtra("person");
-            insertDataDb(personTmp.getName(), personTmp.getAge());
+            Person personTmp = (Person) Objects.requireNonNull(data).getSerializableExtra("person");
+            if(insertDataDb(personTmp)) {
+                snackbarMessage(Objects.requireNonNull(personTmp).getName() + " salvo com sucesso", "OK");
+            }
+            else {
+                snackbarMessage("Erro ao salvar", "OK");
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -102,6 +106,17 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(consLayout, "Configurado", BaseTransientBottomBar.LENGTH_SHORT).show();
                 break;
 
+            case R.id.itemClearAll:
+                if(people.size() != 0) {
+                    createDialogBox("Isso apagará toda a lista e não poderá ser revertido!");
+                }
+
+                else {
+                    snackbarMessage("Lista já se encontra vazia", "OK");
+
+                }
+                break;
+
             default:
                 throw new IllegalStateException("Unexpected value: " + item.getItemId());
         }
@@ -109,23 +124,75 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void createDialogBox(String message) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+
+        dialog.setTitle("Tem Certeza?");
+        dialog.setMessage(message);
+        dialog.setIcon(R.drawable.ic_warning_24dp);
+
+        dialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                DbHelper dbHelper = new DbHelper(getApplicationContext());
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                dbHelper.resetTable(db, DbHelper.TABLE_PESSOAS);
+                if(people.size() > 1) {
+                    snackbarMessage("Os " + people.size() + " itens foram Apagados", "OK");
+                }
+                else {
+                    snackbarMessage("O item " + people.get(0).getName() + " foi Apagado", "OK");
+                }
+                updateRecylcerView();
+            }
+        });
+
+        dialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        dialog.create();
+        dialog.show();
+    }
+
+    public void createDialogBox(final Person person) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+
+        dialog.setTitle("Tem Certeza?");
+        dialog.setMessage("Deseja excluir " + person.getName() + " da lista?");
+
+        dialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deleteDataDataBase(person);
+            }
+        });
+
+        dialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        dialog.create();
+        dialog.show();
+    }
+
     public void recyclerViewListener() {
         recyclerView.addOnItemTouchListener( new RecyclerItemClickListener(getApplicationContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
 
-                Snackbar.make(recyclerView, people.get(position).getName(), BaseTransientBottomBar.LENGTH_LONG).show();
+                Snackbar.make(recyclerView, people.get(position).getName(), BaseTransientBottomBar.LENGTH_SHORT).show();
             }
 
             @Override
             public void onLongItemClick(View view, int position) {
-                if(deleteDataDataBase(myDataBase, people.get(position).getName())) {
-                    Snackbar.make(recyclerView, people.get(position).getName() + " excluído", BaseTransientBottomBar.LENGTH_LONG).show();
-                    people.remove(position);
-                    createRecyclerView();
-                } else {
-                    Snackbar.make(recyclerView, "Erro ao excluir " + people.get(position).getName(), BaseTransientBottomBar.LENGTH_LONG).show();
-                }
+                createDialogBox(people.get(position));
             }
 
             @Override
@@ -145,14 +212,29 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
     }
 
-    public void insertDataDb(String name, int age) {
-
-        String valuesInsert = "'" + name + "', " + age;
-        myDataBase.execSQL( "INSERT INTO tabelaPessoas(nome, idade) VALUES("+valuesInsert+") ");
-
-    }
-    public void createDatabase(String nomeDb) {
+    public boolean insertDataDb(Person person) {
         try {
+            personDAO.save(person);
+        }
+
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    public void createDatabase() {
+        try {
+            personDAO = new PersonDAO(getApplicationContext());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+        /*try {
             //criando o banco de dados
             myDataBase = openOrCreateDatabase(nomeDb,MODE_ENABLE_WRITE_AHEAD_LOGGING, null);
 
@@ -161,56 +243,37 @@ public class MainActivity extends AppCompatActivity {
 
         } catch(Exception e) {
             e.printStackTrace();
+        }*/
+    }
+
+    public void deleteDataDataBase(Person person) {
+        if(!personDAO.delete(person)) {
+            snackbarMessage("Erro ao excluir", "OK");
+        }
+        else {
+            updateRecylcerView();
+            snackbarMessage(person.getName() + " excluído", "Desfazer");
         }
     }
 
-    public boolean deleteDataDataBase(SQLiteDatabase db, String nameOnDataBase) {
-        String comando = "DELETE FROM tabelaPessoas WHERE nome = '" +  nameOnDataBase + "'";
-        System.out.println("Este é o comando: " + comando);
+    public void recoverDataDataBase() {
+
         try {
-            db.execSQL(comando);
-        } catch (Exception e) {
-            Log.i("SQL - ", "Erro ao apagar registro");
-            return false;
+            people = personDAO.list();
+
         }
-        return true;
-    }
-
-    public List<Person> recoverDataDataBase() {
-        Cursor cursor;
-        int indiceNome;
-        int indiceIdade;
-        int indiceId;
-        Person personTmp;
-        List<Person> peopleTmp = new ArrayList<>();
-        cursor = myDataBase.rawQuery("SELECT id, nome, idade FROM tabelaPessoas", null);
-
-        try {
-
-            indiceNome = cursor.getColumnIndex("nome");
-            indiceIdade = cursor.getColumnIndex("idade");
-            indiceId = cursor.getColumnIndex("id");
-
-            cursor.moveToFirst();
-            while (cursor != null) {
-
-                personTmp = (instanciatePerson(cursor.getString(indiceNome), cursor.getInt(indiceIdade)));
-                personTmp.setId(cursor.getInt(indiceId));
-                peopleTmp.add(personTmp);
-                System.out.println(personTmp.getId());
-
-                cursor.moveToNext();
-            }
-            cursor.close();
-            
-        } catch (Exception e) {
+        catch (Exception e) {
             e.printStackTrace();
         }
-        return peopleTmp;
     }
 
-    public Person instanciatePerson(String name, int age) {
-        return new Person(name, age);
+    public void snackbarMessage(String message, String btnMessage) {
+     Snackbar.make(recyclerView,message,BaseTransientBottomBar.LENGTH_LONG).setAction(btnMessage, new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+
+         }
+     }).show();
     }
 }
 

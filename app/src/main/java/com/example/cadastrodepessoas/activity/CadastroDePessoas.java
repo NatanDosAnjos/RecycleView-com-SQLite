@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,11 +36,6 @@ public class CadastroDePessoas extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_ok, menu);
@@ -54,7 +48,7 @@ public class CadastroDePessoas extends AppCompatActivity {
 
         if (item.getItemId() == R.id.ok) {
             person = createPerson();
-            if (intentFunction(person) == true) {
+            if (intentFunction(person)) {
                 finish();
             }
         }
@@ -66,6 +60,7 @@ public class CadastroDePessoas extends AppCompatActivity {
         int age;
 
         name = inputNome.getText().toString();
+        name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
         ageTmp = inputAge.getText().toString();
 
         if (name.length() == 0 && ageTmp.length() == 0) {
@@ -81,9 +76,8 @@ public class CadastroDePessoas extends AppCompatActivity {
 
         } else {
             age = Integer.parseInt(ageTmp);
-            Person person = new Person(name, age);
 
-            return person;
+            return new Person(name, age);
         }
 
         return null;
@@ -132,7 +126,7 @@ public class CadastroDePessoas extends AppCompatActivity {
     }
 
     public void showSoftKeyboard(View focus) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         imm.showSoftInput(focus, InputMethodManager.SHOW_IMPLICIT);
     }
 }
