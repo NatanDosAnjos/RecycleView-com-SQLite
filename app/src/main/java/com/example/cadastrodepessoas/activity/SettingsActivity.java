@@ -1,13 +1,12 @@
 package com.example.cadastrodepessoas.activity;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Switch;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
+
 
 import com.example.cadastrodepessoas.R;
 
@@ -31,11 +30,6 @@ public class SettingsActivity extends AppCompatActivity {
         syncSwitch  = findViewById(R.id.syncSwitch);
     }
 
-    public void setSyncSwitch() {
-        if(syncSwitch.isChecked()) {
-            getSharedPreferences("configurations",MODE_PRIVATE);
-        }
-    }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override

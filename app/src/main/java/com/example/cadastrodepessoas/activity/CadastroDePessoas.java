@@ -28,6 +28,9 @@ public class CadastroDePessoas extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_de_pessoas);
 
+        //Adicionar o botão voltar na Toolbar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         layout = findViewById(R.id.layout);
         inputAge = findViewById(R.id.inputIdade);
         inputNome = findViewById(R.id.inputNome);
@@ -60,7 +63,6 @@ public class CadastroDePessoas extends AppCompatActivity {
         int age;
 
         name = inputNome.getText().toString();
-        name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
         ageTmp = inputAge.getText().toString();
 
         if (name.length() == 0 && ageTmp.length() == 0) {
@@ -75,6 +77,7 @@ public class CadastroDePessoas extends AppCompatActivity {
             makeSnackBar("Preencha o campo nome", "OK", BaseTransientBottomBar.LENGTH_LONG, inputNome);
 
         } else {
+            name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
             age = Integer.parseInt(ageTmp);
 
             return new Person(name, age);

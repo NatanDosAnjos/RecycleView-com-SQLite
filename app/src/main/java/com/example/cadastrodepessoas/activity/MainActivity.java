@@ -1,8 +1,9 @@
 package com.example.cadastrodepessoas.activity;
 
-import android.app.AlertDialog;
+import  android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         consLayout = findViewById(R.id.consLayout);
+        sharedPreferencesListener();
 
         //Criando Banco de Dados
         createDatabase();
@@ -122,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.itemSync:
-                saveOnFirebase();
+                createSyncDialogBox("Essa opção irá salvar sua lista na núvem");
+
                 break;
 
             default:
@@ -131,6 +135,38 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void createSyncDialogBox(String message) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+
+        dialog.setTitle("Sincronizar com a Núvem");
+        dialog.setMessage(message);
+        dialog.setIcon(R.drawable.ic_info_outline_24dp);
+
+        dialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(people.size() >= 1) {
+                    saveOnFirebase();
+                    snackbarMessage( people.size() + " itens foram Sincronizados", "OK");
+
+                }
+                updateRecylcerView();
+            }
+        });
+
+        dialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        dialog.create();
+        dialog.show();
+    }
+
+
 
     public void createDialogBox(String message) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -218,6 +254,20 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+    }
+
+    //Adicionando listener ao SharedPreferences
+    public void sharedPreferencesListener() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if(sharedPreferences.getBoolean(key,false)) {
+                    saveOnFirebase();
+                }
+            }
+        });
     }
 
     public void saveOnFirebase() {
