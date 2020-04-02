@@ -40,6 +40,28 @@ public class PersonDAO implements IPersonDAO {
         return true;
     }
 
+    public boolean saveList(List<Person> list) {
+
+        ContentValues cv;
+
+        try {
+            for (int cont = 0; cont <list.size(); cont++) {
+                cv = new ContentValues();
+                cv.put("nome", list.get(cont).getName());
+                cv.put("idade", list.get(cont).getAge());
+
+                write.insert(DbHelper.TABLE_PESSOAS,null, cv);
+            }
+
+
+        } catch (Exception e) {
+            Log.e("INFO", "Error saving on database");
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public boolean update(Person person) {
         ContentValues contentValues = new ContentValues();

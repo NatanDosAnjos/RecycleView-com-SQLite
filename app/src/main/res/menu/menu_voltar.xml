@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/itemAdd"
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/add"
-        app:showAsAction="ifRoom" />
-
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/itemConfiguracoes"
         android:title="@string/configuration"
@@ -19,4 +19,10 @@
         android:id="@+id/itemSync"
         android:icon="@android:drawable/stat_notify_sync"
         android:title="@string/sync" />
+    <item
+        android:id="@+id/addFake"
+        android:title="Adicionar item Falso" />
+    <item
+        android:id="@+id/upL"
+        android:title="Update da lista" />
 </menu>

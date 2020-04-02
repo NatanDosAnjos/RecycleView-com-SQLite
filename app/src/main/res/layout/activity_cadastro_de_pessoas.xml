@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/hintNome"
             android:importantForAutofill="no"
-            android:inputType="textPersonName" />
+            android:inputType="textCapSentences" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
